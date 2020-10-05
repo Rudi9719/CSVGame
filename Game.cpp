@@ -26,23 +26,25 @@ string game_csv;
 level GotoLevel(int);
 
 int main(int argc, char **argv) {
-  // Refuse to start without at least a game_csv
-  if (argc != 2) {
-    game_csv = "/ftp/pub/users/rudi/CSVGame/story.csv";
-  } else {
-    // Set global game_csv
-    game_csv = argv[1];
-  }
   // Initialize nextLevel to 0 (load first level)
-  int nextLevel = 0;
-  // If user supplied a level
-  if (argc == 3) {
-    // override nextLevel with that level
-    nextLevel = atoi(argv[2]);
+  int next_level = 0;
+  game_csv = "/sys/sdf/share/csvgame/story.csv";
+  for (int i = 1; i < argc; i++) {
+    string test_arg = string(argv[i]);
+    if (test_arg == "-f") {
+      if (argc > i+1) {
+	game_csv = string(argv[i+1]);
+      }
+    }
+    if (test_arg == "-l") {
+      if (argc > i+1) {
+	next_level = atoi(argv[i+1]);
+      }
+    }
   }
-  
-  // Setup the level from nextLevel
-  level  l = GotoLevel(nextLevel);
+
+  // Setup the level from next_level
+  level  l = GotoLevel(next_level);
   while(l.choiceIDs.size() > 0) {
     // Display the level info
     cout << endl << l.id << "\t" << l.title << endl << endl << l.body << endl <<endl;
@@ -53,12 +55,11 @@ int main(int argc, char **argv) {
     do {
       // accept in the next level
       cout << "Goto page: ";
-      cin >> nextLevel;
-    } while (!count(l.choiceIDs.begin(), l.choiceIDs.end(), nextLevel));
-    l = GotoLevel(nextLevel);
+      cin >> next_level;
+    } while (!count(l.choiceIDs.begin(), l.choiceIDs.end(), next_level));
+    l = GotoLevel(next_level);
   }
 }
-
 
 level GotoLevel(int num) {
   // Read file, from the global game_csv converted to a C string (const char array)
@@ -101,6 +102,4 @@ level GotoLevel(int num) {
     line.erase(0, line.find(separator) + separator.length());
   }
   return l;
-  
-  
 }
