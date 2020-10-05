@@ -29,6 +29,9 @@ int main(int argc, char **argv) {
   // Initialize nextLevel to 0 (load first level)
   int next_level = 0;
   game_csv = "/sys/sdf/share/csvgame/story.csv";
+  if (argc == 2) {
+    game_csv = string(argv[1]);
+  }
   for (int i = 1; i < argc; i++) {
     string test_arg = string(argv[i]);
     if (test_arg == "-f") {
